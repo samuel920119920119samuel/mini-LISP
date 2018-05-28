@@ -1,0 +1,27 @@
+{
+  "name": "mini-lisp",
+  "version": "1.0.0",
+  "description": "A mini-compiler for LISP",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/samuel920119920119samuel/mini-LISP.git"
+  },
+  "keywords": [
+    "LISP"
+  ],
+  "author": "RyanWang",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/samuel920119920119samuel/mini-LISP/issues"
+  },
+  "homepage": "https://github.com/samuel920119920119samuel/mini-LISP#readme",
+  "dependencies": {
+    "asty": "^1.7.11",
+    "pegjs": "^0.10.0",
+    "pegjs-util": "^1.4.11"
+  }
+}
