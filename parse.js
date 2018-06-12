@@ -12,7 +12,7 @@ var result = PEGUtil.parse(parser, fs.readFileSync(process.argv[2], "utf8"), {
     }
 })
 
-var dic={"test":1};
+var dic={};
 
 if (result.error !== null)
     console.log("ERROR: Parsing Failure:\n" +
@@ -27,8 +27,8 @@ function getVal(val, dic){
         case "number":
             return val;
         case "boolean":
-            if(bool)        return true;
-            else if(!bool)  return false;
+            if(val)        return true;
+            else if(!val)  return false;
         case "string":
             if(dic[val]!=undefined)    return dic[val];
             else                       console.log("undefine: ", val);
@@ -54,16 +54,17 @@ function interpret(node, dic){
             break;
         case "PrintBool":
             let bool = getVal(interpret(node.C[0],dic),dic);
-            console.log("ans: ", bool);
+            if(bool)    console.log("ans: ", "#t");
+            else        console.log("ans: ", "#f");
             break;
         case "DefStmt":
             let variable = interpret(node.C[0],dic);
             let id       = interpret(node.C[1],dic);
             try{
                 dic[variable] = id;
-             }catch(e){
+            }catch(e){
                 console.log(id, "re-defined, ", "err: ", e);
-             }
+            }
             break;
         case "FunCall":
             // funInfo = [funIds, funBodyTree], from FunExp
@@ -73,24 +74,23 @@ function interpret(node, dic){
             (node.C.slice(1)).forEach( child => params.push(interpret(child,dic)) );
 
             var funDic={};
-            for (i = 0; i < params.length; i++)
+            for (let i = 0; i < params.length; i++)
                 funDic[funInfo[0][i]]=params[i];
 
             return getVal(interpret(funInfo[1], funDic),funDic);
         case "FunExp":
-            let cLength = node.C.length,
-                funIds  = [];
+            let funIds  = [],
                 funBodyTree = node.C[node.C.length-1];
             (node.C.slice(0,node.C.length-1)).forEach( child=>funIds.push(interpret(child,dic)) );
             return [funIds, funBodyTree];
-            //    return (function(funBody, funIds){
+            //    return (function(funIds, funDic){
             //    var funDoc = {};
             //    funIds.forEach( id => funDic[id]=funIds);
             //    interpret(funBody, funDic);
             //});
         case "IfExp":
              if(interpret(node.C[0],dic))   return interpret(node.C[1],dic);
-             else                       return interpret(node.C[2],dic);
+             else                           return interpret(node.C[2],dic);
         case "Plus":
             let plusAns=0;
             node.C.forEach(child => plusAns+=getVal(interpret(child,dic),dic));
@@ -106,7 +106,7 @@ function interpret(node, dic){
         case "Devide":
             let dividend = getVal(interpret(node.C[0],dic),dic),
                 divisor  = getVal(interpret(node.C[1],dic),dic);
-            return dividend / divisor;
+            return parseInt(dividend / divisor);
         case "Mod":
             let mod1 = getVal(interpret(node.C[0],dic),dic),
                 mod2 = getVal(interpret(node.C[1],dic),dic);
